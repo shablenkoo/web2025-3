@@ -1,17 +1,34 @@
 const { Command } = require('commander');
+const fs = require('fs');
+
 const program = new Command();
 
 program
-    .version('1.0.0')
-    .description('Програма для роботи з командним рядком')
-    .option('-n, --name <type>', 'Ваше ім’я', 'Користувач')
-    .option('-a, --age <number>', 'Ваш вік');
-
-program.parse(process.argv);
+    .option('-i, --input <path>', 'Шлях до вхідного JSON-файлу (обовʼязковий параметр)')
+    .option('-o, --output <path>', 'Шлях до вихідного файлу')
+    .option('-d, --display', 'Вивести результат у консоль')
+    .parse(process.argv);
 
 const options = program.opts();
-console.log(`Привіт, ${options.name}!`);
-if (options.age) {
-    console.log(`Вам ${options.age} років.`);
+
+if (!options.input) {
+    console.error("Please, specify input file");
+    process.exit(1);
 }
+
+if (!fs.existsSync(options.input)) {
+    console.error("Cannot find input file");
+    process.exit(1);
+}
+
+const data = fs.readFileSync(options.input, 'utf8');
+
+if (options.output) {
+    fs.writeFileSync(options.output, data, 'utf8');
+}
+
+if (options.display) {
+    console.log("Результат:", data);
+}
+
 
