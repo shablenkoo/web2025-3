@@ -21,14 +21,24 @@ if (!fs.existsSync(options.input)) {
     process.exit(1);
 }
 
-const data = fs.readFileSync(options.input, 'utf8');
+const rawData = fs.readFileSync(options.input, 'utf8');
+const jsonData = JSON.parse(rawData);
+
+const filteredData = jsonData.filter(item => item.ku === 13 && item.value > 5)
+                              .map(item => item.value);
+
+if (filteredData.length === 0) {
+    console.log("No matching data found.");
+    process.exit(0);
+}
+
+const result = filteredData.join('\n');
 
 if (options.output) {
-    fs.writeFileSync(options.output, data, 'utf8');
+    fs.writeFileSync(options.output, result, 'utf8');
 }
 
 if (options.display) {
-    console.log("Результат:", data);
+    console.log("Результат:", result);
 }
-
 
